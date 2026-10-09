@@ -1,0 +1,60 @@
+# ----------------------------------------------------------------------------
+# No patient data, ever. Images, image-derived arrays, per-image predictions,
+# per-image metadata and identifiers stay on the local machine. Only aggregate
+# tables and figures are committed (figures only under docs/figures/).
+# ----------------------------------------------------------------------------
+/local/
+/results/
+/cache/
+/features/
+
+# Image, array, checkpoint and tabular formats, anywhere
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.gif
+*.tif
+*.tiff
+*.webp
+!docs/figures/**/*.png
+!docs/figures/**/*.svg
+*.npz
+*.npy
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.safetensors
+*.h5
+*.csv
+*.tsv
+*.parquet
+*.xlsx
+
+# Known cohort folders and files, wherever they appear
+DATASET_*/
+dataset*/
+scin_images/
+scin_metadata/
+fitzpatrick17k/
+passion*/
+Skin_Metadata*.csv
+*LOCAL_ONLY*
+
+# Python and tooling
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+.claude/

@@ -1,0 +1,58 @@
+{
+  "run_id": "<stage>-<YYYYMMDDTHHMMSSZ>",
+  "stage": 1,
+  "status": "completed | failed | aborted",
+  "started_utc": "",
+  "ended_utc": "",
+  "wall_clock_hours": 0.0,
+  "machine": {
+    "cpu": "AMD Ryzen 7 8700G (8 cores, 16 threads)",
+    "ram_gb": 31,
+    "cuda": false,
+    "os": ""
+  },
+  "authorization": {
+    "date_received": "",
+    "stages": [],
+    "log_entry": "LOG.md#authorizations"
+  },
+  "provenance": {
+    "protocol_commit": "",
+    "preregistration_sha256": "",
+    "dermafair_commit": "89be54e4a5077d7d47ba6b6f4a6c7dd9a6e4866a",
+    "dermafair_tree_clean": true,
+    "harness_commit": "",
+    "harness_tree_clean": true
+  },
+  "command": "",
+  "config": {},
+  "software": {
+    "python": "",
+    "torch": "",
+    "torchvision": "",
+    "scikit_learn": "",
+    "numpy": "",
+    "pillow": "",
+    "libjpeg_turbo": ""
+  },
+  "seeds": {
+    "base": 20261009,
+    "view_draws": [],
+    "bootstrap": 20261009
+  },
+  "inputs_sha256": {},
+  "outputs_sha256": {},
+  "qc": {
+    "Q1_identity": "",
+    "Q2_colour_preservation": "",
+    "Q3_visual_check": "",
+    "Q4_unit_tests": ""
+  },
+  "warnings": [],
+  "results": {
+    "summary": "summary.md",
+    "tables": []
+  },
+  "deviations": [],
+  "console_log": "console.log"
+}

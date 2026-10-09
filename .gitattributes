@@ -1,0 +1,5 @@
+# Normalize text files to LF so file hashes are identical on every platform
+* text=auto eol=lf
+
+*.png binary
+*.svg text
