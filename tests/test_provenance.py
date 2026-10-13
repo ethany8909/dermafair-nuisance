@@ -38,3 +38,12 @@ def test_real_log_parses_and_protocol_is_frozen():
 
 def test_addendum_is_the_committed_one():
     assert len(P.check_addendum()) == 64
+
+
+def test_outputs_are_written_with_lf_line_endings(tmp_path):
+    from nuisance import stages
+
+    stages._write_json(tmp_path / "a.json", {"x": [1, 2]})
+    P.write_lf(tmp_path / "b.md", "line 1\nline 2\n")
+    for name in ("a.json", "b.md"):
+        assert b"\r" not in (tmp_path / name).read_bytes()

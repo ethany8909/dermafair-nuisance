@@ -74,14 +74,14 @@ def write_qc_reports(q1: dict, q2: dict, q3: dict, q4: dict, run_id: str) -> dic
     _write_json(QC_DIR / "Q2_colour_preservation.json", q2)
     _write_json(ADMISSIBLE, q2["admissible"])
     _write_json(QC_DIR / "Q4_unit_tests.json", q4)
-    (QC_DIR / "Q2_colour_preservation.md").write_text(q2_markdown(q2, run_id), encoding="utf-8")
-    (QC_DIR / "Q3_contact_sheets.md").write_text(
+    P.write_lf(QC_DIR / "Q2_colour_preservation.md", q2_markdown(q2, run_id))
+    P.write_lf(
+        QC_DIR / "Q3_contact_sheets.md",
         f"# Q3: contact sheets ({run_id})\n\n"
         f"{q3['families']} sheets, one per family. Each shows {q3['images']} internal images (3 Fitzpatrick III–IV, "
         f"3 V–VI, a fixed seeded draw) clean and at severities {', '.join(map(str, q3['severities']))}.\n\n"
         "The sheets show patient photographs, so they stay in `local/qc/` and are never committed. The visual review "
         "is recorded in [Q3_review.md](Q3_review.md).\n",
-        encoding="utf-8",
     )
     return {f"qc/{p.name}": base.sha256_file(p) for p in sorted(QC_DIR.glob("*")) if p.name != "Q3_review.md"}
 
@@ -339,7 +339,7 @@ def _primary_markdown(res: dict, run_id: str, n_cells: int) -> str:
 
 
 def _write_json(path: Path, obj) -> None:
-    path.write_text(json.dumps(obj, indent=2, default=float) + "\n", encoding="utf-8")
+    P.write_lf(path, json.dumps(obj, indent=2, default=float) + "\n")
 
 
 # --------------------------------------------------------------------------- #
@@ -376,7 +376,7 @@ def stage1() -> None:
         res = E.primary(coh, [b0], m1, names, boot)
         res["cp_cells"] = names
         _write_json(run.dir / "verdict.json", res)
-        (run.dir / "PRIMARY.md").write_text(_primary_markdown(res, run.id, len(names)), encoding="utf-8")
+        P.write_lf(run.dir / "PRIMARY.md", _primary_markdown(res, run.id, len(names)))
         _write_json(
             run.dir / "S1_cells_CP.json",
             {"B0": E.cell_table(coh, [b0], names, boot), "M1": E.cell_table(coh, m1, names, boot)},

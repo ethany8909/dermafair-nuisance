@@ -18,6 +18,13 @@ RUNS = REPO / "runs"
 LOCAL = REPO / "local"  # git-ignored: per-image arrays, feature banks, contact sheets
 
 
+def write_lf(path: Path, text: str) -> None:
+    """Write UTF-8 text with LF line endings on every platform, so a recorded SHA-256 matches the committed file
+    (the repository stores text as LF; .gitattributes)."""
+    with open(path, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+
+
 # --------------------------------------------------------------------------- #
 # repository state
 # --------------------------------------------------------------------------- #
@@ -206,10 +213,8 @@ class Run:
             "deviations": self.deviations,
             "console_log": "console.log",
         }
-        (self.dir / "run_record.json").write_text(
-            json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        (self.dir / "console.log").write_text("\n".join(self.lines) + "\n", encoding="utf-8")
-        (self.dir / "summary.md").write_text(self.summary or f"# {self.id}\n\nStatus: {status}\n", encoding="utf-8")
+        write_lf(self.dir / "run_record.json", json.dumps(record, indent=2, ensure_ascii=False) + "\n")
+        write_lf(self.dir / "console.log", "\n".join(self.lines) + "\n")
+        write_lf(self.dir / "summary.md", self.summary or f"# {self.id}\n\nStatus: {status}\n")
         print(f"run record written to {self.dir.relative_to(REPO)}", file=sys.stderr)
         return False  # never swallow the exception
