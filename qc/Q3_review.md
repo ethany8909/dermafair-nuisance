@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Run | `stage0-20261013T011646Z` (harness `67caeb7`) |
+| Run | `stage0-20261013T012829Z` (harness `16c4bae`). The sheets are identical to those of the superseded run `stage0-20261013T011646Z`, since the transforms did not change |
 | Sheets | 11, one per family, kept in `local/qc/` and never committed |
 | Images | 6 internal images (3 Fitzpatrick III–IV, 3 V–VI, a fixed seeded draw), shown clean and at severities 1, 3 and 5 |
 

@@ -1,0 +1,85 @@
+{
+  "run_id": "stage0-20261013T012829Z",
+  "stage": 0,
+  "status": "completed",
+  "started_utc": "2026-10-13T01:28:29+00:00",
+  "ended_utc": "2026-10-13T01:36:00+00:00",
+  "wall_clock_hours": 0.1253,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 117 Stepping 2, AuthenticAMD",
+    "logical_cpus": 16,
+    "cuda": false
+  },
+  "authorization": {},
+  "provenance": {
+    "protocol_commit": "986fbca2be03d605f29c34a3596a2206bcbb0ff6",
+    "preregistration_sha256": "901d5e2c49e9815a63079fbf02c4a91760392bc727d96c3cd573c8169875ba37",
+    "addendum_1_sha256": "9331f0da7c65e8f9529382f4838c011594120d7cbbca580855ec63b7ded48a96",
+    "dermafair_commit": "89be54e4a5077d7d47ba6b6f4a6c7dd9a6e4866a",
+    "dermafair_tree_clean": true,
+    "harness_commit": "16c4baea5fc15cecc7a605b4131ccfaf165c4b26",
+    "harness_tree_clean": true
+  },
+  "command": "python -m nuisance stage0",
+  "config": {
+    "workers": 12
+  },
+  "software": {
+    "python": "3.14.6",
+    "torch": "2.12.1+cpu",
+    "torchvision": "0.27.1+cpu",
+    "scikit_learn": "1.9.0",
+    "numpy": "2.5.0",
+    "pillow": "12.3.0",
+    "libjpeg_turbo": "3.1.4.1"
+  },
+  "seeds": {
+    "base": 20261009,
+    "bootstrap": 20261009
+  },
+  "inputs_sha256": {
+    "Skin_Metadata-1.csv": "43ac90d147cba2eac0608093770b6319fad74c087ea06d0eba67da684417f67b",
+    "manifest_clean.csv": "18694a9aaf99dbf154adf42a2f118fcffa02ab7067306ce67e71b1836e0ec7c7",
+    "internal_canonical_manifest.csv": "9575ff8a8bb017912ebb45c87ca9d3a513fe2cae87ef7a930d6c8f9adb78cb3a",
+    "external_scin_manifest.csv": "b4114710aa0baee510da27d6a7e55bd98f04bf7ef0be272c4188784daeb6d520",
+    "fitzpatrick17k.csv": "851dfaabf1791c2a8b1c2957619f3e0673cf0002f4ce924a5c02d185c7d4a1cd",
+    "internal_256.npy": "06139ba65c9a0606323744e9a320648935cd48a53cc6e79c50ef8025e962eb7b",
+    "external_256.npy": "5fce2218aa698597bf1d30554471c0d09554d04d9aecd9ea2c91bb77e6fbe09f",
+    "fitz17k_256_255.npy": "64c7d5c642dd59b7450bc836d862746296e0c6f9b9f651e4f37836cc177371b8",
+    "dinov2_b14_clean.npz": "324ed028404e4f71b1b1b2aee1fb0d335f90952fb4e15f69323a7f000b2e2790",
+    "dinov2_b14_fitz17k_255.npz": "d161b8504364b20487c65563fb08adce35948270fc93bfa0ea04d36b30fcb5d6",
+    "params.json": "7d6299f016464d5f8c8e9c284e4d52ae010bd3ff5e0ac694521a7268468f030b",
+    "final_preds.npz": "1136834fee53dd03dbabfa73805d106f88a8b29641991cb5047adb291dd4f584",
+    "fitz17k_preds.npz": "132e42951ea3d429196536e92c3c8509731871dcac2920a21c1e6341eaa167cd",
+    "dinov2_vitb14_pretrain.pth": "0b8b82f85de91b424aded121c7e1dcc2b7bc6d0adeea651bf73a13307fad8c73"
+  },
+  "outputs_sha256": {
+    "qc/Q1_identity.json": "b05c6c4f665744311d299672fbeb7b6c36188d02e4914b594e6f2a5332dddd75",
+    "qc/Q2_admissible.json": "1e692290ff754e0bc358f26610c77bb0616b554698c486c10f3f29ee46a8c5c8",
+    "qc/Q2_colour_preservation.json": "1d147cf6f5617b03aa35f48b07b5ff79ad3a1c32a84a0e3c697083a954dc5247",
+    "qc/Q2_colour_preservation.md": "1b5e6d4806735d98d11e69e28a62ac6e71a37147dd19c65d147dbbfcfa63a342",
+    "qc/Q3_contact_sheets.md": "04d69094260fb1cd3a46a2b9ca03950593d4f72701fcfd7b8719ebae2273a950",
+    "qc/Q4_unit_tests.json": "35a1335e10e1a10a04ed5d7adc21cd42dc0ef1992bb42e3924d186fa4f383e66"
+  },
+  "qc": {
+    "Q1_identity": "pass",
+    "Q2_colour_preservation": "pass with reclassification: 24 of 25 CP cells survive",
+    "Q3_visual_check": "contact sheets written locally; review recorded in qc/Q3_review.md",
+    "Q4_unit_tests": "pass"
+  },
+  "warnings": [],
+  "results": {
+    "summary": "summary.md",
+    "tables": [
+      "qc/Q1_identity.json",
+      "qc/Q2_admissible.json",
+      "qc/Q2_colour_preservation.json",
+      "qc/Q2_colour_preservation.md",
+      "qc/Q3_contact_sheets.md",
+      "qc/Q4_unit_tests.json"
+    ]
+  },
+  "deviations": [],
+  "console_log": "console.log"
+}

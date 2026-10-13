@@ -12,7 +12,7 @@ aggregate evidence from each run. It builds on [DermaFair](https://github.com/et
 | Date | Status |
 |---|---|
 | 2026-10-09 | Protocol v1.1 frozen, tag `prereg-v1.1`. |
-| 2026-10-12 | [Addendum 1](ADDENDUM-1.md) committed (tag `addendum-1`). Harness `67caeb7`; stage-0 checks run: Q1 pass, Q2 24 of 25 colour-preserving cells survive (JPEG quality 10 reclassified), Q4 148 passed, Q3 awaiting author confirmation. See [qc/](qc). **The protected comparison (stages 1–5) has not been run** and waits for written authorization from the research-track lead. |
+| 2026-10-12 | [Addendum 1](ADDENDUM-1.md) committed (tag `addendum-1`). Harness `16c4bae`; stage-0 checks run (`stage0-20261013T012829Z`): Q1 pass, Q2 24 of 25 colour-preserving cells survive (JPEG quality 10 reclassified), Q4 149 passed, Q3 awaiting author confirmation. See [qc/](qc). **The protected comparison (stages 1–5) has not been run** and waits for written authorization from the research-track lead. |
 
 ## Contents
 

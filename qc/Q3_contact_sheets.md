@@ -1,4 +1,4 @@
-# Q3: contact sheets (stage0-20261013T011646Z)
+# Q3: contact sheets (stage0-20261013T012829Z)
 
 11 sheets, one per family. Each shows 6 internal images (3 Fitzpatrick III–IV, 3 V–VI, a fixed seeded draw) clean and at severities 1, 3, 5.
 
