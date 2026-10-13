@@ -1,0 +1,82 @@
+{
+  "run_id": "stage0-20261013T010109Z",
+  "stage": 0,
+  "status": "completed",
+  "started_utc": "2026-10-13T01:01:09+00:00",
+  "ended_utc": "2026-10-13T01:07:26+00:00",
+  "wall_clock_hours": 0.1047,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 117 Stepping 2, AuthenticAMD",
+    "logical_cpus": 16,
+    "cuda": false
+  },
+  "authorization": {},
+  "provenance": {
+    "protocol_commit": "986fbca2be03d605f29c34a3596a2206bcbb0ff6",
+    "preregistration_sha256": "901d5e2c49e9815a63079fbf02c4a91760392bc727d96c3cd573c8169875ba37",
+    "dermafair_commit": "89be54e4a5077d7d47ba6b6f4a6c7dd9a6e4866a",
+    "dermafair_tree_clean": true,
+    "harness_commit": "ad378e05f22a478263aa94aad2389cbc49995ccf",
+    "harness_tree_clean": true
+  },
+  "command": "python -m nuisance stage0",
+  "config": {
+    "workers": 12
+  },
+  "software": {
+    "python": "3.14.6",
+    "torch": "2.12.1+cpu",
+    "torchvision": "0.27.1+cpu",
+    "scikit_learn": "1.9.0",
+    "numpy": "2.5.0",
+    "pillow": "12.3.0",
+    "libjpeg_turbo": "3.1.4.1"
+  },
+  "seeds": {
+    "base": 20261009,
+    "bootstrap": 20261009
+  },
+  "inputs_sha256": {
+    "Skin_Metadata-1.csv": "43ac90d147cba2eac0608093770b6319fad74c087ea06d0eba67da684417f67b",
+    "manifest_clean.csv": "18694a9aaf99dbf154adf42a2f118fcffa02ab7067306ce67e71b1836e0ec7c7",
+    "internal_canonical_manifest.csv": "9575ff8a8bb017912ebb45c87ca9d3a513fe2cae87ef7a930d6c8f9adb78cb3a",
+    "external_scin_manifest.csv": "b4114710aa0baee510da27d6a7e55bd98f04bf7ef0be272c4188784daeb6d520",
+    "fitzpatrick17k.csv": "851dfaabf1791c2a8b1c2957619f3e0673cf0002f4ce924a5c02d185c7d4a1cd",
+    "internal_256.npy": "06139ba65c9a0606323744e9a320648935cd48a53cc6e79c50ef8025e962eb7b",
+    "external_256.npy": "5fce2218aa698597bf1d30554471c0d09554d04d9aecd9ea2c91bb77e6fbe09f",
+    "fitz17k_256_255.npy": "64c7d5c642dd59b7450bc836d862746296e0c6f9b9f651e4f37836cc177371b8",
+    "dinov2_b14_clean.npz": "324ed028404e4f71b1b1b2aee1fb0d335f90952fb4e15f69323a7f000b2e2790",
+    "dinov2_b14_fitz17k_255.npz": "d161b8504364b20487c65563fb08adce35948270fc93bfa0ea04d36b30fcb5d6",
+    "params.json": "7d6299f016464d5f8c8e9c284e4d52ae010bd3ff5e0ac694521a7268468f030b",
+    "final_preds.npz": "1136834fee53dd03dbabfa73805d106f88a8b29641991cb5047adb291dd4f584",
+    "fitz17k_preds.npz": "132e42951ea3d429196536e92c3c8509731871dcac2920a21c1e6341eaa167cd",
+    "dinov2_vitb14_pretrain.pth": "0b8b82f85de91b424aded121c7e1dcc2b7bc6d0adeea651bf73a13307fad8c73"
+  },
+  "outputs_sha256": {
+    "qc/Q1_identity.json": "a0e4f60efcd3f57b9f714a2d5045d11ee87a29841bf4e77c843bb0522639c286",
+    "qc/Q2_colour_preservation.json": "226ea422111a895c520ea6f041d05eebb0d387a9a38c13078c07c51bb4dd8323",
+    "qc/Q2_colour_preservation.md": "e6cf443b27ebc9d09de07182bb9fd54301b125726c5d77aa3515b41aa1a4de97",
+    "qc/Q3_contact_sheets.md": "385672a55d09e9e0429c4a1f4a8f619828847149c0b35860c60cdaca7d2647e2",
+    "qc/Q4_unit_tests.json": "16ec5b46dea6dd419356a5e46588f566012d9f5870c97980783e8f18ebee037c"
+  },
+  "qc": {
+    "Q1_identity": "pass",
+    "Q2_colour_preservation": "fail",
+    "Q3_visual_check": "contact sheets written locally; review recorded in qc/Q3_review.md",
+    "Q4_unit_tests": "pass"
+  },
+  "warnings": [],
+  "results": {
+    "summary": "summary.md",
+    "tables": [
+      "qc/Q1_identity.json",
+      "qc/Q2_colour_preservation.json",
+      "qc/Q2_colour_preservation.md",
+      "qc/Q3_contact_sheets.md",
+      "qc/Q4_unit_tests.json"
+    ]
+  },
+  "deviations": [],
+  "console_log": "console.log"
+}

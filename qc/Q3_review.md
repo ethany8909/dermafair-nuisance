@@ -1,0 +1,27 @@
+# Q3: visual review of the contact sheets
+
+| | |
+|---|---|
+| Run | `stage0-20261013T011646Z` (harness `67caeb7`) |
+| Sheets | 11, one per family, kept in `local/qc/` and never committed |
+| Images | 6 internal images (3 Fitzpatrick III–IV, 3 V–VI, a fixed seeded draw), shown clean and at severities 1, 3 and 5 |
+
+Reviewed: pending author confirmation
+
+| Family | What the sheet shows | As specified in §4 |
+|---|---|---|
+| A, JPEG | Severities 1 and 3 look like the clean image at this size. Severity 5 (quality 10) shows 8 × 8 blocking and pink-magenta colour blotches | Yes. The blotches match A5's Q2 failure |
+| B, resolution | Progressive loss of detail; severity 5 is visibly soft | Yes |
+| C, zoom | Centred crops that tighten around the image centre, with no shift, flip or rotation | Yes |
+| D, blur | Progressive blur | Yes |
+| E, noise | Fine luminance grain at severity 5, with no colour tint | Yes |
+| F−, under-exposure | Progressively darker | Yes |
+| F+, over-exposure | Progressively brighter; severity 5 is washed out | Yes |
+| G−, warm cast | Progressively orange | Yes |
+| G+, cool cast | Progressively blue | Yes |
+| H−, desaturation | Progressively greyer; severity 5 is grayscale | Yes |
+| H+, over-saturation | Progressively more vivid | Yes |
+
+**Pre-review:** Claude (AI assistant), 2026-10-12, at the author's request. No transform behaved differently from §4.
+
+**Author confirmation (Ethan Yu):** pending.

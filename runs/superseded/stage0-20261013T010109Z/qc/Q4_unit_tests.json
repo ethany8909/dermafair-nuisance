@@ -1,0 +1,6 @@
+{
+  "command": "python -m pytest",
+  "summary": "125 passed in 8.26s",
+  "returncode": 0,
+  "pass": true
+}
