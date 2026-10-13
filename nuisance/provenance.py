@@ -28,6 +28,13 @@ def check_prereg() -> str:
     return digest
 
 
+def check_addendum() -> str:
+    digest = base.sha256_file(REPO / "ADDENDUM-1.md")
+    if digest != spec.ADDENDUM_1_SHA256:
+        raise RuntimeError("ADDENDUM-1.md differs from the committed addendum (SHA-256 mismatch).")
+    return digest
+
+
 def protocol_commit() -> str:
     return base.git(REPO, "rev-list", "-n", "1", spec.PROTOCOL_TAG)
 
@@ -144,6 +151,7 @@ class Run:
 
     def __enter__(self):
         self.prereg = check_prereg()
+        self.addendum = check_addendum()
         self.harness, clean = harness_state()
         if not clean:
             raise RuntimeError("The harness has uncommitted changes; commit them before a run.")
@@ -180,6 +188,7 @@ class Run:
             "provenance": {
                 "protocol_commit": protocol_commit(),
                 "preregistration_sha256": self.prereg,
+                "addendum_1_sha256": self.addendum,
                 "dermafair_commit": spec.DERMAFAIR_COMMIT,
                 "dermafair_tree_clean": True,
                 "harness_commit": self.harness,

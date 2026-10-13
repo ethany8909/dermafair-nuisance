@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 from nuisance import base, spec
 
 PROTOCOL = Path(__file__).resolve().parents[1] / "PREREGISTRATION.md"
@@ -82,6 +84,40 @@ def test_constants_appear_in_protocol():
     assert (spec.BASE_SEED, spec.NOISE_STREAM, spec.COMPUTE_CAP_HOURS) == (20261009, 99, 15.0)
     assert spec.COHORT_IDS == {"internal": 0, "scin": 1, "fitz17k": 2, "passion": 3}
     assert (spec.Q1_MIN_COSINE, spec.Q2_MAX_ITA, spec.Q2_MAX_AB) == (0.9999, 2.0, 1.0)
+
+
+ADDENDUM = PROTOCOL.with_name("ADDENDUM-1.md")
+ADD_TEXT = ADDENDUM.read_text(encoding="utf-8")
+
+
+def test_addendum_file_is_the_committed_one():
+    assert base.sha256_file(ADDENDUM) == spec.ADDENDUM_1_SHA256
+
+
+def test_midpoints_match_addendum_table_and_rule():
+    for line in ADD_TEXT.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) == 5 and cells[0][:2] in {f"{f}," for f in spec.CP}:
+            fam = cells[0][0]
+            assert tuple(float(x) for x in cells[1:]) == tuple(float(x) for x in spec.MIDPOINTS[fam]), fam
+    for fam in spec.CP:
+        f = spec.FAMILIES[fam]
+        for j, mid in enumerate(spec.MIDPOINTS[fam]):
+            a, b = f.levels[j], f.levels[j + 1]
+            assert mid == pytest.approx((a + b) // 2 if f.integer else (a + b) / 2), (fam, j)
+
+
+def test_addendum_constants_appear_in_its_text():
+    for phrase in (
+        "`default_rng([20261009, 99, 0, i, 10 + j])`",
+        "500 pixels or fewer",
+        "at least 90% of the group's images",
+        "below 13",
+        "Fitzpatrick III–IV (782 cached internal images) and V–VI\n  (340)",
+    ):
+        assert phrase in ADD_TEXT, phrase
+    assert (spec.MASK_MAX_INADEQUATE_PIXELS, spec.MASK_MIN_ADEQUATE_SHARE, spec.CP_MIN_SURVIVING) == (500, 0.90, 13)
+    assert spec.MIDPOINT_NOISE_CODE == 10
 
 
 def test_appendix_b_hashes_match_protocol():

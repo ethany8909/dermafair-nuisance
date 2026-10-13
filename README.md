@@ -19,6 +19,7 @@ aggregate evidence from each run. It builds on [DermaFair](https://github.com/et
 | Path | Purpose |
 |---|---|
 | [PREREGISTRATION.md](PREREGISTRATION.md) | The frozen protocol |
+| [ADDENDUM-1.md](ADDENDUM-1.md) | Addendum 1 (tag `addendum-1`): Q2 failure handling, colour QC by tone group, R1 reporting |
 | [LOG.md](LOG.md) | Authorizations, deviations and the run index, recorded after the freeze |
 | [nuisance/](nuisance) | The analysis harness |
 | [tests/](tests) | The unit tests (check Q4); synthetic data only |
@@ -34,12 +35,12 @@ aggregate evidence from each run. It builds on [DermaFair](https://github.com/et
 | `transforms.py` | The 11 transform families of §4, the grid cells and the seeded training-view sampler. |
 | `models.py` | B0 (DermaFair's frozen `lab.logreg`), and M1/C1 (the same head plus 8 views per image, half the weight on the clean image). |
 | `endpoints.py` | The 80%-sensitivity threshold, decision flips, AUROC, the paired patient bootstrap, G, R1–R4 and the verdict. |
-| `qc.py` | Checks Q1–Q4, which read no diagnosis label and no classifier output. |
+| `qc.py` | Checks Q1–Q4, which read no diagnosis label and no classifier output. Q2 follows Addendum 1: grid cells and CP midpoints, pass and fail in each tone group, inadequate masks flagged, admissible training intervals written to `qc/Q2_admissible.json`. |
 | `provenance.py` | Protocol and repository checks, the authorization and compute ledgers, and the run record. |
 | `stages.py` | Stage 0 (the checks) and stages 1–4 (the protected comparison). |
 
 **How it enforces the protocol.** Every run refuses to start unless all of these hold:
-- PREREGISTRATION.md matches its frozen SHA-256;
+- PREREGISTRATION.md and ADDENDUM-1.md match their frozen SHA-256;
 - the harness working tree is clean;
 - DermaFair is at `89be54e` with a clean tree;
 - every input matches Appendix B.
@@ -47,6 +48,7 @@ aggregate evidence from each run. It builds on [DermaFair](https://github.com/et
 Stages 1–4 also refuse unless all of these hold:
 - `LOG.md` has a dated authorization naming the stage;
 - the last stage-0 run passed every check with the same code;
+- `qc/Q2_admissible.json` is unchanged and leaves at least 13 colour-preserving cells;
 - the Q3 review is recorded;
 - earlier stages are complete, and the stage-1 verdict is committed before stage 2;
 - compute remains under the 15-hour cap.

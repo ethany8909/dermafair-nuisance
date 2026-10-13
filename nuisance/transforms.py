@@ -158,18 +158,27 @@ def cell(img: np.ndarray, family: str, severity: int, cohort: str = "internal", 
     return apply(img, family, param(family, severity), rng)
 
 
+def midpoint(img: np.ndarray, family: str, j: int, cohort: str = "internal", i: int = 0) -> np.ndarray:
+    """Addendum 1: the CP family at the midpoint between severities j and j + 1 (j = 1..4)."""
+    rng = noise_rng(cohort, i, spec.MIDPOINT_NOISE_CODE + j) if family == "E" else None
+    return apply(img, family, spec.MIDPOINTS[family][j - 1], rng)
+
+
 def view_rng(draw: int, i: int, v: int) -> np.random.Generator:
     """Generator for training view v of internal image row i in draw r (section 8)."""
     return np.random.default_rng([spec.BASE_SEED, int(draw), int(i), int(v)])
 
 
-def draw_view(img: np.ndarray, rng: np.random.Generator, families: tuple[str, ...]) -> tuple[np.ndarray, str, float]:
+def draw_view(
+    img: np.ndarray, rng: np.random.Generator, families: tuple[str, ...], ranges: dict | None = None
+) -> tuple[np.ndarray, str, float]:
     """One training view: family uniform over `families`, parameter uniform over its training range.
 
-    The generator is consumed in a fixed order: the family, then the parameter, then (family E only) the noise.
+    `ranges` overrides a family's range with its admissible interval (Addendum 1, section 1.3). The generator is
+    consumed in a fixed order: the family, then the parameter, then (family E only) the noise.
     """
     fid = families[int(rng.integers(len(families)))]
     fam = spec.FAMILIES[fid]
-    lo, hi = fam.train
+    lo, hi = (ranges or {}).get(fid, fam.train)
     p = int(rng.integers(lo, hi + 1)) if fam.integer else float(rng.uniform(lo, hi))
     return apply(img, fid, p, rng), fid, p

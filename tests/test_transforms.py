@@ -85,6 +85,21 @@ def test_training_ranges_span_the_grid():
         assert f.train == (min(f.levels), max(f.levels)), f.id
 
 
+def test_view_sampler_respects_admissible_intervals(img):
+    small = img[::4, ::4]
+    ranges = {"A": (20, 75), "C": (0.8, 0.9)}
+    for v in range(200):
+        _, fid, p = T.draw_view(small, T.view_rng(1, 3, v), ("A", "C"), ranges)
+        assert ranges[fid][0] <= p <= ranges[fid][1]
+
+
+def test_midpoints_are_deterministic_and_use_their_own_noise_stream(img):
+    a = T.midpoint(img, "E", 2, "internal", 4)
+    assert np.array_equal(a, T.midpoint(img, "E", 2, "internal", 4))
+    assert not np.array_equal(a, T.cell(img, "E", 2, "internal", 4))
+    assert np.array_equal(T.midpoint(img, "A", 1), T.jpeg(img, 62))
+
+
 @pytest.mark.parametrize("families", [spec.M1_FAMILIES, spec.C1_FAMILIES])
 def test_view_sampler_ranges_and_reproducibility(img, families):
     small = img[::4, ::4]

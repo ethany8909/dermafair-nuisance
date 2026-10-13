@@ -81,7 +81,7 @@ def test_r1_rejects_a_robust_but_less_discriminating_method():
     worse = np.clip(0.5 * clean + rng.normal(0.25, 0.2, len(clean)), 0, 1)
     m1 = [_scored(worse, coh.y, 0.0, rng, NAMES)]
     res = E.primary(coh, [b0], m1, NAMES, E.bootstrap_indices(coh.clusters, 300, 1))
-    assert res["fails"]["R1"] and res["verdict"].startswith("Rejected: harm")
+    assert res["fails"]["R1"] and res["verdict"].startswith("Rejected: R1")
 
 
 def test_r4_rejects_more_flips_on_darker_skin():
@@ -100,3 +100,21 @@ def test_cell_table_and_summary_shapes():
     assert len(rows) == 3 * len(NAMES) and {"fr", "auc", "sens", "spec", "fr_lo", "fr_hi"} <= set(rows[0])
     summ = E.summary_table(coh, {"B0": [b0]}, {"CP": NAMES}, boot)
     assert len(summ) == 1 and 0 <= summ[0]["mfr_all"] <= 1
+
+
+def test_r1_categories_distinguish_imprecision_from_demonstrated_loss():
+    assert E.r1_category(-0.015, 0.01) == "passes"
+    assert E.r1_category(-0.03, 0.01) == "R1: non-inferiority not shown (interval too wide)"
+    assert E.r1_category(-0.03, -0.005) == "R1: clean-performance loss demonstrated"
+    assert E.r1_category(-0.06, -0.025) == "R1: material clean-performance loss demonstrated"
+
+
+def test_guard_wording_says_loss_only_when_demonstrated():
+    fails = {"R1": False, "R2": True, "R3": True, "R4": True}
+    cis = {"d_auc_all": (-0.01, 0.01), "d_auc_darker": (-0.05, 0.02)}
+    r = E.failure_reasons(fails, cis)
+    assert r["R2"] == "R2: darker-skin guard triggered (point estimate)"
+    assert "guard triggered" in r["R3"] and "guard triggered" in r["R4"]
+    assert (
+        E.failure_reasons(fails, {**cis, "d_auc_darker": (-0.05, -0.01)})["R2"] == "R2: darker-skin loss demonstrated"
+    )

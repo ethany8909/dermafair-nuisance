@@ -11,6 +11,7 @@ from dataclasses import dataclass
 PROTOCOL_VERSION = "1.1"
 PROTOCOL_TAG = "prereg-v1.1"
 PREREG_SHA256 = "901d5e2c49e9815a63079fbf02c4a91760392bc727d96c3cd573c8169875ba37"
+ADDENDUM_1_SHA256 = "9331f0da7c65e8f9529382f4838c011594120d7cbbca580855ec63b7ded48a96"  # ADDENDUM-1.md, tag addendum-1
 DERMAFAIR_COMMIT = "89be54e4a5077d7d47ba6b6f4a6c7dd9a6e4866a"
 
 # --------------------------------------------------------------------------- #
@@ -69,6 +70,23 @@ Q2_MAX_ITA = 2.0  # degrees, median |change in median skin ITA|
 Q2_MAX_AB = 1.0  # CIELAB units, median |change in median skin a*| and |b*|
 Q3_PER_GROUP = 3
 Q3_SEVERITIES = (1, 3, 5)
+
+# Addendum 1, section 1: midpoints between adjacent severities of each CP family (integer families rounded
+# down), the noise code of family E's midpoints, the floor on surviving CP cells.
+MIDPOINTS = {
+    "A": (62, 40, 25, 15),
+    "B": (144, 112, 80, 56),
+    "C": (0.85, 0.75, 0.65, 0.55),
+    "D": (0.75, 1.25, 1.75, 2.5),
+    "E": (3, 5, 7.5, 10.5),
+}
+MIDPOINT_NOISE_CODE = 10  # the midpoint between severities j and j + 1 uses severity code 10 + j
+CP_MIN_SURVIVING = 13
+
+# Addendum 1, section 2: masks and tone groups.
+MASK_MAX_INADEQUATE_PIXELS = 500  # a reference mask with this many pixels or fewer is inadequate
+MASK_MIN_ADEQUATE_SHARE = 0.90  # a point is evaluable in a tone group if at least 90% of its masks are adequate
+TONE_GROUPS = {"lighter": 0, "darker": 1}  # internal: Fitzpatrick III-IV and V-VI
 
 # --------------------------------------------------------------------------- #
 # Section 5: models

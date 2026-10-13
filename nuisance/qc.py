@@ -2,7 +2,7 @@
 classifier output.
 
     Q1  identity: severity 0, through the harness and DermaFair's frozen encoder, reproduces the stored features
-    Q2  colour preservation: how far each grid cell moves skin ITA, a* and b*; CP cells must stay within limits
+    Q2  colour preservation by tone group (Addendum 1): grid cells and CP midpoints; admissible training intervals
     Q3  contact sheets for a visual check (local only, never committed)
     Q4  the unit-test suite (tests/)
 """
@@ -51,27 +51,40 @@ def q1_identity(log=print) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# Q2 colour preservation
+# Q2 colour preservation (protocol section 4, specified by Addendum 1, section 2)
 # --------------------------------------------------------------------------- #
+# Checked points: the 55 grid cells ("s", severity) and the 4 midpoints of each CP family ("m", j for j..j+1).
+POINTS = [(fam, "s", sev, T.param(fam, sev)) for fam, sev in CELLS] + [
+    (fam, "m", j, spec.MIDPOINTS[fam][j - 1]) for fam in spec.CP for j in (1, 2, 3, 4)
+]
+
+
+def point_name(fam: str, kind: str, j: int) -> str:
+    return spec.cell_name(fam, j) if kind == "s" else f"{fam}{j}-{j + 1}"
+
+
+def adequate(mask: np.ndarray) -> bool:
+    """Addendum 1, section 2.2: a reference mask with 500 pixels or fewer is inadequate."""
+    return int(mask.sum()) > spec.MASK_MAX_INADEQUATE_PIXELS
+
+
 def skin_stats(img: np.ndarray, mask: np.ndarray) -> np.ndarray:
-    """(median skin ITA, median a*, median b*) over the mask, with DermaFair's fallback to every pixel when the
-    mask has 500 pixels or fewer (dermafair.data.skin_tone.ita)."""
+    """(median ITA, median a*, median b*) over the masked pixels; ITA = atan2(L* - 50, b*) in degrees.
+
+    No fallback to the whole image: callers pass adequate masks only."""
     from dermafair.data.skin_tone import rgb2lab
 
-    lab = rgb2lab(img).reshape(-1, 3)
-    m = mask.reshape(-1)
-    if m.sum() > 500:
-        lab = lab[m]
+    lab = rgb2lab(img).reshape(-1, 3)[mask.reshape(-1)]
     ita = np.degrees(np.arctan2(lab[:, 0] - 50, lab[:, 2]))
     return np.array([np.median(ita), np.median(lab[:, 1]), np.median(lab[:, 2])])
 
 
 def q2_image(i: int) -> np.ndarray:
-    """Changes (ITA, a*, b*) for every grid cell of internal image row i: (len(CELLS), 3).
+    """(len(POINTS), 3) changes in (ITA, a*, b*) for internal image row i; NaN where the reference mask is inadequate.
 
-    The DermaFair skin mask is computed once on the reference image and applied to both images, so the same
-    pixels are compared. The reference is the clean image, except for zoom (family C), where it is the identically
-    cropped clean image before resizing, so zoom measures resampling rather than content selection.
+    The DermaFair skin mask is computed once on the reference image and applied to both the reference and the
+    transformed image, so the same pixels are compared. The reference is the clean image; for zoom it is the
+    identically cropped clean image before resizing, whose mask is resized to the output by nearest neighbour.
     """
     base.activate()
     from dermafair.data.skin_tone import skin_mask
@@ -79,19 +92,70 @@ def q2_image(i: int) -> np.ndarray:
     img = np.asarray(_cache()[i])
     h, w = img.shape[:2]
     mask = skin_mask(img) > 0.5
-    ref = skin_stats(img, mask)
-    out = np.zeros((len(CELLS), 3))
-    for j, (fam, sev) in enumerate(CELLS):
-        moved = T.cell(img, fam, sev, "internal", i)
+    ref = skin_stats(img, mask) if adequate(mask) else None
+    out = np.full((len(POINTS), 3), np.nan)
+    for j, (fam, kind, k, value) in enumerate(POINTS):
+        moved = T.cell(img, fam, k, "internal", i) if kind == "s" else T.midpoint(img, fam, k, "internal", i)
         if fam == "C":
-            top, left, side = T.zoom_box(T.param("C", sev), h, w)
+            top, left, side = T.zoom_box(value, h, w)
             crop = img[top : top + side, left : left + side]
             crop_mask = skin_mask(crop) > 0.5
-            up = Image.fromarray(crop_mask.astype(np.uint8) * 255).resize((w, h), Image.NEAREST)
-            out[j] = skin_stats(moved, np.asarray(up) > 127) - skin_stats(crop, crop_mask)
-        else:
+            if adequate(crop_mask):
+                up = Image.fromarray(crop_mask.astype(np.uint8) * 255).resize((w, h), Image.NEAREST)
+                out[j] = skin_stats(moved, np.asarray(up) > 127) - skin_stats(crop, crop_mask)
+        elif ref is not None:
             out[j] = skin_stats(moved, mask) - ref
     return out
+
+
+def summarize_point(d: np.ndarray, groups: dict) -> dict:
+    """Per group: mask adequacy and the medians of |change| and of the signed change over adequate-mask images."""
+    out = {}
+    for g, m in groups.items():
+        dd = d[m]
+        ok = ~np.isnan(dd[:, 0])
+        s = {"n": int(m.sum()), "n_adequate": int(ok.sum()), "share_adequate": float(ok.mean()) if m.any() else np.nan}
+        for q, key in enumerate(("ita", "a", "b")):
+            s[f"abs_{key}"] = float(np.median(np.abs(dd[ok, q]))) if ok.any() else np.nan
+            s[key] = float(np.median(dd[ok, q])) if ok.any() else np.nan
+        out[g] = s
+    return out
+
+
+def point_passes(summary: dict) -> bool:
+    """Addendum 1, section 2.3: evaluable and within every limit in each tone group."""
+    for g in spec.TONE_GROUPS:
+        s = summary[g]
+        if not s["share_adequate"] >= spec.MASK_MIN_ADEQUATE_SHARE:
+            return False
+        if not (s["abs_ita"] <= spec.Q2_MAX_ITA and s["abs_a"] <= spec.Q2_MAX_AB and s["abs_b"] <= spec.Q2_MAX_AB):
+            return False
+    return True
+
+
+def admissibility(passes: dict) -> dict:
+    """Addendum 1, section 1: the passing prefix of each CP family.
+
+    passes[(family, "s", j)] is the result for severity j, passes[(family, "m", j)] for the midpoint j..j+1."""
+    families, surviving, reclassified = {}, [], []
+    for fam in spec.CP:
+        k = 0
+        for j in spec.SEVERITIES:
+            if not passes[(fam, "s", j)] or (j > 1 and not passes[(fam, "m", j - 1)]):
+                break
+            k = j
+        levels = spec.FAMILIES[fam].levels
+        families[fam] = {"k": k, "interval": sorted((levels[0], levels[k - 1])) if k else None}
+        surviving += [spec.cell_name(fam, s) for s in spec.SEVERITIES if s <= k]
+        reclassified += [spec.cell_name(fam, s) for s in spec.SEVERITIES if s > k]
+    return {
+        "families": families,
+        "m1_families": [f for f in spec.CP if families[f]["k"] > 0],
+        "surviving_cp": surviving,
+        "reclassified_to_ca": reclassified,
+        "n_surviving": len(surviving),
+        "stage1_eligible": len(surviving) >= spec.CP_MIN_SURVIVING,
+    }
 
 
 def q2_colour(log=print, workers: int | None = None) -> dict:
@@ -99,41 +163,42 @@ def q2_colour(log=print, workers: int | None = None) -> dict:
     n = len(_cache())
     if len(tone) != n:
         raise RuntimeError(f"tone vector ({len(tone)}) does not match the cache ({n})")
-    log(f"Q2: {len(CELLS)} cells x {n} internal images")
+    log(f"Q2: {len(POINTS)} checked points x {n} internal images")
     with ProcessPoolExecutor(max_workers=workers, initializer=base.activate) as ex:
-        delta = np.stack(list(ex.map(q2_image, range(n), chunksize=8)))  # (n, cells, 3)
-    rows = []
-    for j, (fam, sev) in enumerate(CELLS):
-        d = delta[:, j, :]
+        delta = np.stack(list(ex.map(q2_image, range(n), chunksize=8)))  # (n, points, 3)
+    groups = {"all": np.ones(n, bool), **{g: tone == code for g, code in spec.TONE_GROUPS.items()}}
+    rows, passes = [], {}
+    for j, (fam, kind, k, value) in enumerate(POINTS):
+        summary = summarize_point(delta[:, j, :], groups)
         row = {
-            "cell": spec.cell_name(fam, sev),
+            "point": point_name(fam, kind, k),
             "family": fam,
+            "kind": "cell" if kind == "s" else "midpoint",
             "class": spec.FAMILIES[fam].cls,
-            "severity": sev,
-            "param": T.param(fam, sev),
-            "abs_ita": float(np.median(np.abs(d[:, 0]))),
-            "abs_a": float(np.median(np.abs(d[:, 1]))),
-            "abs_b": float(np.median(np.abs(d[:, 2]))),
+            "param": value,
+            **summary,
         }
-        for g, code in (("lighter", 0), ("darker", 1)):
-            m = tone == code
-            row[f"ita_{g}"] = float(np.median(d[m, 0]))
-            row[f"a_{g}"] = float(np.median(d[m, 1]))
-            row[f"b_{g}"] = float(np.median(d[m, 2]))
         if row["class"] == "CP":
-            row["pass"] = bool(
-                row["abs_ita"] <= spec.Q2_MAX_ITA and row["abs_a"] <= spec.Q2_MAX_AB and row["abs_b"] <= spec.Q2_MAX_AB
-            )
+            row["pass"] = point_passes(summary)
+            passes[(fam, kind, k)] = row["pass"]
         rows.append(row)
-    cp = [r for r in rows if r["class"] == "CP"]
+    adm = admissibility(passes)
     return {
         "n_images": int(n),
         "n_lighter": int((tone == 0).sum()),
         "n_darker": int((tone == 1).sum()),
-        "limits": {"abs_ita": spec.Q2_MAX_ITA, "abs_a": spec.Q2_MAX_AB, "abs_b": spec.Q2_MAX_AB},
+        "n_unknown_tone": int((tone == -1).sum()),
+        "limits": {
+            "abs_ita": spec.Q2_MAX_ITA,
+            "abs_a": spec.Q2_MAX_AB,
+            "abs_b": spec.Q2_MAX_AB,
+            "inadequate_mask_pixels_at_most": spec.MASK_MAX_INADEQUATE_PIXELS,
+            "min_adequate_share": spec.MASK_MIN_ADEQUATE_SHARE,
+        },
         "rows": rows,
-        "cp_failures": [r["cell"] for r in cp if not r["pass"]],
-        "pass": all(r["pass"] for r in cp),
+        "admissible": adm,
+        "cp_failures": [r["point"] for r in rows if r.get("pass") is False],
+        "pass": all(r["pass"] for r in rows if "pass" in r),
     }
 
 

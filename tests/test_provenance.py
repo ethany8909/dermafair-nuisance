@@ -34,3 +34,7 @@ def test_authorized_stages_reads_only_dated_rows(tmp_path):
 def test_real_log_parses_and_protocol_is_frozen():
     P.authorized_stages()  # raises if an entry is unreadable
     assert len(P.check_prereg()) == 64
+
+
+def test_addendum_is_the_committed_one():
+    assert len(P.check_addendum()) == 64

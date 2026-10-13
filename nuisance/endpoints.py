@@ -118,6 +118,34 @@ def method_endpoints(coh: Cohort, reps: list[Scored], flips: list[np.ndarray], i
 # --------------------------------------------------------------------------- #
 # the primary comparison and the verdict (section 6)
 # --------------------------------------------------------------------------- #
+def r1_category(lo: float, hi: float) -> str:
+    """Addendum 1, section 3: how a 95% CI for the clean-AUROC change relates to the R1 gate (unchanged)."""
+    if lo >= spec.R1_LOWER_BOUND:
+        return "passes"
+    if hi >= 0:
+        return "R1: non-inferiority not shown (interval too wide)"
+    if hi >= spec.R1_LOWER_BOUND:
+        return "R1: clean-performance loss demonstrated"
+    return "R1: material clean-performance loss demonstrated"
+
+
+def failure_reasons(fails: dict, cis: dict) -> dict:
+    """Addendum 1, section 3: wording for each failing rule. 'Loss' is said only when its CI excludes zero."""
+    out = {}
+    if fails["R1"]:
+        out["R1"] = r1_category(*cis["d_auc_all"])
+    if fails["R2"]:
+        demonstrated = cis["d_auc_darker"][1] < 0
+        out["R2"] = (
+            "R2: darker-skin loss demonstrated" if demonstrated else "R2: darker-skin guard triggered (point estimate)"
+        )
+    if fails["R3"]:
+        out["R3"] = "R3: tone-gap guard triggered (point estimate)"
+    if fails["R4"]:
+        out["R4"] = "R4: darker-skin robustness guard triggered (point estimate)"
+    return out
+
+
 def primary(coh: Cohort, b0: list[Scored], m1: list[Scored], cp_names: list[str], boot: list[np.ndarray]) -> dict:
     """Invariance gain G, failure rules R1-R4 and the verdict for M1 against B0."""
     fb = [r.flip_matrix(cp_names) for r in b0]
@@ -157,8 +185,9 @@ def primary(coh: Cohort, b0: list[Scored], m1: list[Scored], cp_names: list[str]
         "R3": bool(point["d_gap"] > spec.R3_GAP),
         "R4": bool(pm["mfr_darker"] > pb["mfr_darker"]),
     }
-    if any(fails.values()):
-        verdict = "Rejected: harm (" + ", ".join(k for k, v in fails.items() if v) + ")"
+    reasons = failure_reasons(fails, cis)
+    if reasons:
+        verdict = "Rejected: " + "; ".join(reasons.values())
     else:
         verdict = "Supported" if gain else "Not supported"
     return {
@@ -171,6 +200,7 @@ def primary(coh: Cohort, b0: list[Scored], m1: list[Scored], cp_names: list[str]
         "relative_mfr_reduction": float(rel),
         "G": gain,
         "fails": fails,
+        "failure_reasons": reasons,
         "verdict": verdict,
         "baseline_already_robust": bool(pb["mfr_all"] < spec.BASELINE_ROBUST_BELOW),
         "n_images": int(len(coh.y)),
