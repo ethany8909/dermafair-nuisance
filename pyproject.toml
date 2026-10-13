@@ -1,0 +1,29 @@
+[project]
+name = "dermafair-nuisance"
+version = "1.1.0"
+description = "Preregistered study: less sensitivity to acquisition nuisance without erasing skin-tone-relevant appearance"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Ethan Yu" }]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-exclude = ["local"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = [
+    "E501",  # long lines are left to the formatter
+    "E731",  # small lambdas are used as local helpers
+    "B905",  # zip() without strict= is intentional for equal-length arrays
+    "UP006", "UP007", "UP035", "UP045",  # keep annotations readable on Python 3.10
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["nuisance"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

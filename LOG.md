@@ -16,7 +16,7 @@ Each stage in §10 of the protocol runs only after an entry here.
 
 | Date received | From | Stage(s) authorized | Wording (quoted) |
 |---|---|---|---|
-| — | — | — | — |
+| 2026-10-12 | research-track lead | 0 only | Paraphrased: proceed with stage 0 preparation only; stages 1–5 stay on hold until the harness SHA and aggregate Q1–Q4 evidence are sent, as §9 requires. |
 
 ## Deviations
 
