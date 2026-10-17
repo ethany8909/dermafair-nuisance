@@ -6,7 +6,7 @@
 | Sheets | 11, one per family, kept in `local/qc/` and never committed |
 | Images | 6 internal images (3 Fitzpatrick III–IV, 3 V–VI, a fixed seeded draw), shown clean and at severities 1, 3 and 5 |
 
-Reviewed: pending author confirmation
+Reviewed: yes (Ethan Yu, 2026-10-17)
 
 | Family | What the sheet shows | As specified in §4 |
 |---|---|---|
@@ -24,4 +24,4 @@ Reviewed: pending author confirmation
 
 **Pre-review:** Claude (AI assistant), 2026-10-12, at the author's request. No transform behaved differently from §4.
 
-**Author confirmation (Ethan Yu):** pending.
+**Author confirmation (Ethan Yu):** 2026-10-17. Ethan reviewed the contact sheets and confirmed that every family behaves as §4 specifies.
