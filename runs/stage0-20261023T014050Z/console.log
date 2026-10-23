@@ -1,0 +1,8 @@
+18:40:50 run stage0-20261023T014050Z: protocol prereg-v1.1, harness 2364ab5, DermaFair 89be54e
+18:40:52 all 14 Appendix B inputs match their frozen SHA-256
+18:41:13 Q4 unit tests: 170 passed, 7 subtests passed in 15.12s
+18:41:22 Q1: encoding 1125 internal images through the severity-0 path
+18:44:11 Q1 identity: min cosine 1.000000 (pass)
+18:44:11 Q2: 75 checked points x 1125 internal images
+18:53:09 Q2 colour preservation: pass with reclassification: 24 of 25 CP cells survive
+18:53:12 Q3: 11 contact sheets written to C:\Users\ethan\OneDrive\Documents\Stage2-EczemaPsoriasis\dermafair-nuisance\local\qc

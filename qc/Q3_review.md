@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Run | `stage0-20261013T012829Z` (harness `16c4bae`). The sheets are identical to those of the superseded run `stage0-20261013T011646Z`, since the transforms did not change |
+| Run | `stage0-20261023T014050Z` (harness `2364ab5`). All 11 sheets are byte-identical (SHA-256) to those the author confirmed on 2026-10-17 from run `stage0-20261013T012829Z` (harness `16c4bae`), because the transforms did not change, so that confirmation applies |
 | Sheets | 11, one per family, kept in `local/qc/` and never committed |
 | Images | 6 internal images (3 Fitzpatrick III–IV, 3 V–VI, a fixed seeded draw), shown clean and at severities 1, 3 and 5 |
 

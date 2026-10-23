@@ -1,4 +1,4 @@
-# Q2: colour preservation by tone group (stage0-20261013T012829Z)
+# Q2: colour preservation by tone group (stage0-20261023T014050Z)
 
 Specified by [Addendum 1](../ADDENDUM-1.md). 1125 cached internal images: Fitzpatrick III–IV 782, V–VI 340 (3 of unknown type count only toward the overall summary in the JSON). ITA in degrees; a\* and b\* in CIELAB units. No diagnosis label, feature or classifier output was read.
 
