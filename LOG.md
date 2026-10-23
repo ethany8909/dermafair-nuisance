@@ -25,6 +25,12 @@ Each entry gives the date, what changed, why, and whether any outcome had been s
 
 None. Addendum 1 adds rules the protocol left open; it is listed under Freeze.
 
+## Harness changes after review
+
+| Date | Change |
+|---|---|
+| 2026-10-22 | **Guard repair adopted** from the research-track lead's review of 2026-10-18. The review found four defects in `guard()`, which decides whether stages 1–4 may start: (a) a newer failed stage-0 run could be skipped in favour of an older pass; (b) missing or unknown QC entries could pass; (c) recorded software versions were not compared, although §11 requires them unchanged; (d) the eligibility flag was tested for truthiness, so the string "false" passed. The proposed patch was applied with its logic unchanged (the formatter only reflowed two lines), and the review's 21 synthetic guard tests were added as `tests/test_guard.py`. A stale verdict assertion in `tests/test_pipeline.py` was corrected to the Addendum 1 wording. Nothing else changed: no transform, training range, endpoint, threshold, seed, budget, dataset status, protocol text or addendum. Stage 0 is rerun under the repaired harness. The review also notes, correctly, that colour preservation between checked points is an interpolation assumption (Addendum 1, §1.3); it stays stated in any report. |
+
 ## Stage-0 runs (checks; not result-bearing)
 
 | Run id | Harness | Status | Note |

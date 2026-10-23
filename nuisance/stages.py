@@ -281,19 +281,43 @@ def guard(stage: int) -> tuple[dict, dict]:
     """Refuse to run a protected stage unless every precondition holds; return (authorization, admissibility)."""
     if stage not in P.authorized_stages():
         raise PermissionError(f"Stage {stage} has no dated authorization in LOG.md; it may not run.")
-    s0 = [r for r in P.records(0) if r["status"] == "completed"]
-    if not s0:
-        raise PermissionError("No completed stage-0 run.")
+    s0 = P.records(0)
+    if not s0 or s0[-1].get("status") != "completed":
+        raise PermissionError("The latest stage-0 run must be completed; an older pass cannot replace a later failure.")
     last = s0[-1]
-    if any(str(v).startswith("fail") for v in last["qc"].values()):
-        raise PermissionError(f"Stage-0 checks did not pass in {last['run_id']}: {last['qc']}")
+    checks = last.get("qc")
+    if not isinstance(checks, dict) or any(checks.get(k) != "pass" for k in ("Q1_identity", "Q4_unit_tests")):
+        raise PermissionError("Stage 0 must explicitly record passing Q1 and Q4 checks.")
+    if checks.get("Q3_visual_check") != "contact sheets written locally; review recorded in qc/Q3_review.md":
+        raise PermissionError("Stage 0 does not record the required Q3 contact-sheet handoff.")
+    if any(str(v).lower().startswith("fail") for v in checks.values()):
+        raise PermissionError(f"Stage-0 checks did not pass in {last['run_id']}: {checks}")
+    frozen_software = last.get("software")
+    software_keys = ("python", "torch", "torchvision", "scikit_learn", "numpy", "pillow", "libjpeg_turbo")
+    if not isinstance(frozen_software, dict) or any(
+        not isinstance(frozen_software.get(k), str) or not frozen_software[k].strip() for k in software_keys
+    ):
+        raise PermissionError("Stage 0 has no complete software-version record (PREREGISTRATION.md section 11).")
+    current_software = P.versions()
+    changed = [k for k in software_keys if current_software.get(k) != frozen_software[k]]
+    if changed:
+        raise PermissionError(
+            "Software differs from Stage 0; review required before a protected run: " + ", ".join(changed)
+        )
     if P.code_changed_since(last["provenance"]["harness_commit"]):
         raise PermissionError("The harness code changed after the last stage-0 run; rerun stage 0 first.")
     if base.sha256_file(ADMISSIBLE) != last["outputs_sha256"].get("qc/Q2_admissible.json"):
         raise PermissionError("qc/Q2_admissible.json differs from the file the last stage-0 run wrote.")
     adm = json.loads(ADMISSIBLE.read_text(encoding="utf-8"))
-    if not adm["stage1_eligible"]:
+    if adm.get("stage1_eligible") is not True:
         raise PermissionError(f"Only {adm['n_surviving']} CP cells survive Q2; stage 1 may not run (Addendum 1, 1.4).")
+    expected_q2 = (
+        f"pass with reclassification: {adm['n_surviving']} of 25 CP cells survive"
+        if adm["reclassified_to_ca"]
+        else "pass"
+    )
+    if checks.get("Q2_colour_preservation") != expected_q2:
+        raise PermissionError("Stage 0 must explicitly record the Q2 verdict matching the frozen admissibility file.")
     if "Reviewed: yes" not in (QC_DIR / "Q3_review.md").read_text(encoding="utf-8"):
         raise PermissionError("The Q3 visual review is not recorded in qc/Q3_review.md.")
     if stage >= 2:

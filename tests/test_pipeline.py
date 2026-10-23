@@ -58,6 +58,6 @@ def test_stage1_pipeline_on_synthetic_data():
     m1 = [stages.score_internal(X, y, folds, F, V[r])[0] for r in spec.M1_DRAWS]
     coh = E.Cohort(y, tone, subject)
     res = E.primary(coh, [b0], m1, names, E.bootstrap_indices(coh.clusters, 100, 0))
-    assert res["verdict"] in ("Supported", "Not supported") or res["verdict"].startswith("Rejected: harm")
+    assert res["verdict"] in ("Supported", "Not supported") or res["verdict"].startswith("Rejected: R")
     assert set(res["fails"]) == {"R1", "R2", "R3", "R4"} and 0 <= res["B0"]["mfr_all"] <= 1
     assert len(b0.cells) == 25 and not np.isnan(b0.clean).any()

@@ -47,8 +47,13 @@ aggregate evidence from each run. It builds on [DermaFair](https://github.com/et
 
 Stages 1–4 also refuse unless all of these hold:
 - `LOG.md` has a dated authorization naming the stage;
-- the last stage-0 run passed every check with the same code;
-- `qc/Q2_admissible.json` is unchanged and leaves at least 13 colour-preserving cells;
+- the latest stage-0 run completed, with the same code. An older pass never stands in for a newer failure;
+- that run explicitly records Q1 and Q4 as passing, records the Q3 handoff, and has a Q2 verdict that matches the
+  admissibility file;
+- every software version it recorded (Python, PyTorch, torchvision, scikit-learn, NumPy, Pillow, libjpeg-turbo) is
+  unchanged;
+- `qc/Q2_admissible.json` is unchanged, is marked eligible with a real `true`, and leaves at least 13
+  colour-preserving cells;
 - the Q3 review is recorded;
 - earlier stages are complete, and the stage-1 verdict is committed before stage 2;
 - compute remains under the 15-hour cap.
